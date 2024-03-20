@@ -1,0 +1,3 @@
+[submodule "mteb"]
+	path = mteb
+	url = https://github.com/orionw/mteb.git
