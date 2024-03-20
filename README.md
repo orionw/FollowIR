@@ -1,4 +1,4 @@
-<h1 align="center">FollowIR: Massive Text Embedding Benchmark -- <b>with Instructions</b></h1>
+<h1 align="center">FollowIR: using MTEB -- <b>with Instructions</b></h1>
 
 <h4 align="center">
     <p>
@@ -9,10 +9,6 @@
     <p>
 </h4>
 
-<h3 align="center">
-    <a href="https://huggingface.co/spaces/jhu-clsp/mteb-leaderboard"><img style="float: middle; padding: 10px 10px 10px 10px;" width="60" height="55" src="./docs/images/hf_logo.png" /></a>
-</h3>
-
 
 ## Installation
 
@@ -22,7 +18,7 @@ pip install git+https://github.com/orionw/mteb-instruct.git
 
 ## Usage
 
-* Using a python script (see [models/]() for several examples). You can use this in the same way you evaluate on MTEB -- the only change required is to check for "instructions" in kwargs of your `encode` function, and if so, to use them. If you have a model that already works with sentence_transformers, you can use it like this:
+* Using a python script (see [models/](https://github.com/orionw/mteb-instruct/tree/master/models) for several examples). You can use this in the same way you evaluate on MTEB -- the only change required is to check for "instructions" in kwargs of your `encode` function, and if so, to use them. If you have a model that already works with sentence_transformers, you can use it like this:
 
 ```bash
 python -u models/base_sentence_transformer/evaluate_sentence_transformer.py --model_name_or_path 
@@ -38,7 +34,7 @@ which will output the python command.
 
 ### Using a custom model
 
-Models should implement the following interface, **exactly as in MTEB**, implementing an `encode` function taking as inputs a list of sentences, and returning a list of embeddings (embeddings can be `np.array`, `torch.tensor`, etc.). **It must check for `instructions` in kwargs of the `encode` function and use them. For inspiration, you can look at the [models/ section](https://github.com/embeddings-benchmark/mtebscripts) for a variety of model types.
+Models should implement the following interface, **exactly as in MTEB**, implementing an `encode` function taking as inputs a list of sentences, and returning a list of embeddings (embeddings can be `np.array`, `torch.tensor`, etc.). **It must check for `instructions` in kwargs of the `encode` function and use them. For inspiration, you can look at the [models/ section](https://github.com/orionw/mteb-instruct/tree/master/models) for a variety of model types.
 
 ```python
 class MyModel():
