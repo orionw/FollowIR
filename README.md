@@ -1,30 +1,37 @@
-<h1 align="center">FollowIR: using MTEB -- <b>with Instructions</b></h1>
+<h1 align="center">FollowIR: Evaluating and Teaching Information
+Retrieval Models to Follow Instructions</b></h1>
 
 <h4 align="center">
     <p>
         <a href="#installation">Installation</a> |
         <a href="#usage">Usage</a> |
-        <a href="#leaderboard">Leaderboard</a> |
+        <a href="#leaderboard">Leaderboard (coming soon)</a> |
         <a href="#citing">Citing</a> |
     <p>
 </h4>
+
+Official repository for the paper [FollowIR: Evaluating and Teaching Information Retrieval Models to Follow Instructions](). Evaluation extends the [MTEB](https://github.com/embeddings-benchmark/mteb) framework to use instructions, so you can evaluate your mteb compatible code by only changing a few lines!
 
 
 ## Installation
 
 ```bash
-pip install git+https://github.com/orionw/mteb-instruct.git
+git clone --recurse-submodules https://github.com/orionw/FollowIR.git
+cd FollowIR/
+conda create -n followir python=3.9 -y
+conda activate followir
+pip install -r requirements.txt
 ```
 
 ## Usage
 
-* Using a python script (see [models/](https://github.com/orionw/mteb-instruct/tree/master/models) for several examples). You can use this in the same way you evaluate on MTEB -- the only change required is to check for "instructions" in kwargs of your `encode` function, and if so, to use them. If you have a model that already works with sentence_transformers, you can use it like this:
+You can use this in the same way you evaluate on MTEB -- the only change required is to check for `instructions` in kwargs of your `encode` function, and if so, to use them (they are given when encoding queries). Many examples for different types of models are in [models/](https://github.com/orionw/mteb-instruct/tree/master/models). If you have a model that already works with sentence_transformers, you can easily use it with no changes:
 
 ```bash
 python -u models/base_sentence_transformer/evaluate_sentence_transformer.py --model_name_or_path 
 ```
 
-You can generate this python command for any of the models we have already added with:
+If you have a different model (or want to use one that was evaluated in the paper) you can generate this python command with:
 
 ```bash
 python evaluate_any.py --model MODEL_NAME
@@ -34,7 +41,7 @@ which will output the python command.
 
 ### Using a custom model
 
-Models should implement the following interface, **exactly as in MTEB**, implementing an `encode` function taking as inputs a list of sentences, and returning a list of embeddings (embeddings can be `np.array`, `torch.tensor`, etc.). **It must check for `instructions` in kwargs of the `encode` function and use them. For inspiration, you can look at the [models/ section](https://github.com/orionw/mteb-instruct/tree/master/models) for a variety of model types.
+Models should implement the following interface, **exactly as in MTEB**, implementing an `encode` function taking as inputs a list of sentences, and returning a list of embeddings (embeddings can be `np.array`, `torch.tensor`, etc.). **It must check for `instructions` in kwargs of the `encode` function and use them**. For inspiration, you can look at the [models/ section](https://github.com/orionw/mteb-instruct/tree/master/models) for a variety of model types.
 
 ```python
 class MyModel():
