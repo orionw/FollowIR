@@ -3,6 +3,7 @@ Retrieval Models to Follow Instructions</b></h1>
 
 <h4 align="center">
     <p>
+        <a href="#links">Links</a> |
         <a href="#installation">Installation</a> |
         <a href="#usage">Usage</a> |
         <a href="#leaderboard">Leaderboard (coming soon)</a> |
@@ -12,6 +13,14 @@ Retrieval Models to Follow Instructions</b></h1>
 
 Official repository for the paper [FollowIR: Evaluating and Teaching Information Retrieval Models to Follow Instructions](). Evaluation extends the [MTEB](https://github.com/embeddings-benchmark/mteb) framework to use instructions, so you can evaluate your mteb compatible code by only changing a few lines!
 
+## Links
+| Binary |                                                                 Description                                                                |
+|:------|:-------------------------------------------------------------------------------------------------------------------------------------------|
+| [FollowIR-7B](https://huggingface.co/jhu-clsp/FollowIR-7B) |   7B parameter model that does document reranking given a query and instructions. It is finetuned from Mistral-7B on the datasets below  | 
+| [FollowIR-train](https://huggingface.co/datasets/jhu-clsp/FollowIR-train) | The dataset used to train FollowIR-7B. It consists of TREC instructions and queries, and GPT generated synthetic documents that have been filtered. |
+| [FollowIR-train-raw](https://huggingface.co/datasets/jhu-clsp/FollowIR-train-raw) |  The pre-filtered version of the train set above. This was not used in model training as some GPT generated data is incorrect. |              
+
+You can also find the individual annotated test data ([Robust04](https://huggingface.co/datasets/jhu-clsp/robust04-instructions), [Core17](https://huggingface.co/datasets/jhu-clsp/core17-instructions), and [News21](https://huggingface.co/datasets/jhu-clsp/news21-instructions)) although the format is best used with this evaluation code.
 
 ## Installation
 
