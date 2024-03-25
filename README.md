@@ -3,7 +3,7 @@ Retrieval Models to Follow Instructions</b></h1>
 
 <h4 align="center">
     <p>
-        <a href="#links">Links</a> |
+        <a href="#links">Model/Data Links</a> |
         <a href="#installation">Installation</a> |
         <a href="#usage">Usage</a> |
         <a href="#leaderboard">Leaderboard (coming soon)</a> |
@@ -11,7 +11,7 @@ Retrieval Models to Follow Instructions</b></h1>
     <p>
 </h4>
 
-Official repository for the paper [FollowIR: Evaluating and Teaching Information Retrieval Models to Follow Instructions](https://arxiv.org/abs/2403.15246). The evaluation extends the [MTEB](https://github.com/embeddings-benchmark/mteb) framework to use instructions, so you can evaluate your mteb compatible code by only changing a few lines!
+Official repository for the paper [FollowIR: Evaluating and Teaching Information Retrieval Models to Follow Instructions](https://arxiv.org/abs/2403.15246). The evaluation extends the [MTEB](https://github.com/embeddings-benchmark/mteb) framework to use instructions, so you can evaluate your MTEB compatible code by only changing a few lines!
 
 ## Links
 | Binary |                                                                 Description                                                                |
