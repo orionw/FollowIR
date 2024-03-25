@@ -11,7 +11,7 @@ Retrieval Models to Follow Instructions</b></h1>
     <p>
 </h4>
 
-Official repository for the paper [FollowIR: Evaluating and Teaching Information Retrieval Models to Follow Instructions (https://arxiv.org/abs/2403.15246) Evaluation extends the [MTEB](https://github.com/embeddings-benchmark/mteb) framework to use instructions, so you can evaluate your mteb compatible code by only changing a few lines!
+Official repository for the paper [FollowIR: Evaluating and Teaching Information Retrieval Models to Follow Instructions](https://arxiv.org/abs/2403.15246) Evaluation extends the [MTEB](https://github.com/embeddings-benchmark/mteb) framework to use instructions, so you can evaluate your mteb compatible code by only changing a few lines!
 
 ## Links
 | Binary |                                                                 Description                                                                |
