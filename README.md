@@ -29,6 +29,7 @@ git clone --recurse-submodules https://github.com/orionw/FollowIR.git
 cd FollowIR/
 conda create -n followir python=3.9 -y
 conda activate followir
+pip install mteb/
 pip install -r requirements.txt
 ```
 
