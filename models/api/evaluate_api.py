@@ -2,6 +2,7 @@ from langchain.storage import LocalFileStore
 from langchain_openai import OpenAIEmbeddings
 from langchain.embeddings import CacheBackedEmbeddings
 from langchain_community.embeddings import CohereEmbeddings	
+from langchain_google_vertexai import VertexAIEmbeddings
 import pandas as pd
 import numpy as np
 import argparse
@@ -24,6 +25,10 @@ class APISentenceTransformer(DRESModel):
     def load_embedding_model(self):
         if self.embedding_type == "openai":
             underlying_embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+        elif self.embedding_type == "google":
+            # NOTE: had to modify the langchain-google-vertexai package to accept an embedding model name without `gecko` in it 
+            underlying_embeddings = VertexAIEmbeddings(model_name="text-embedding-preview-0409")
+            return underlying_embeddings # caching with langchain not implemented
         else:
             underlying_embeddings = CohereEmbeddings(model='embed-english-v3.0')
 
@@ -50,24 +55,32 @@ class APISentenceTransformer(DRESModel):
 
     
     def embed_api(self, sentences, type):
-        if type == "docs":
+        if self.embedding_type == "google":
             try:
-                return self.embedder.embed_documents(sentences)
+                return self.embedder.embed(sentences, embeddings_task_type="RETRIEVAL_DOCUMENT" if type == "docs" else "RETRIEVAL_QUERY")
             except Exception as e:
                 import time
                 time.sleep(60)
-                return self.embedder.embed_documents(sentences)
+                return self.embedder.embed(sentences, embeddings_task_type="RETRIEVAL_DOCUMENT" if type == "docs" else "RETRIEVAL_QUERY")
         else:
-            assert len(sentences) == 1
-            sentences = sentences[0]
-            try:
-                return [self.embedder.embed_query(sentences)]
-            except Exception as e:
-                import time
-                time.sleep(60)
-                return [self.embedder.embed_query(sentences)]
-            
-    
+            if type == "docs":
+                try:
+                    return self.embedder.embed_documents(sentences)
+                except Exception as e:
+                    import time
+                    time.sleep(60)
+                    return self.embedder.embed_documents(sentences)
+            else:
+                assert len(sentences) == 1
+                sentences = sentences[0]
+                try:
+                    return [self.embedder.embed_query(sentences)]
+                except Exception as e:
+                    import time
+                    time.sleep(60)
+                    return [self.embedder.embed_query(sentences)]
+                
+        
 
     def encode(self, sentences, batch_size: int = 100, **kwargs):
         """
@@ -82,11 +95,13 @@ class APISentenceTransformer(DRESModel):
         if "instructions" in kwargs: # is queries
             instructions = kwargs["instructions"]
             instruction_list = [instructions[q].strip() for q in sentences]
-            sentences = [(s + " " + i).strip() for s, i in zip(sentences, instruction_list)]
+            if self.embedding_type == "google":
+                sentences = [(i + " " + s).strip() for s, i in zip(sentences, instruction_list)]
+            else:
+                sentences = [(s + " " + i).strip() for s, i in zip(sentences, instruction_list)]
             print(sentences[0])
             assert len(sentences) == 1
             embeddings = self.embed_api(sentences, type="queries")
-            print(len(list(self.store.yield_keys())))
 
         else:
             # is docs
@@ -99,7 +114,6 @@ class APISentenceTransformer(DRESModel):
                 cur_embeds = self.embed_api(batch, type="docs")
                 embeddings.extend(cur_embeds)
             assert len(embeddings) == len(sentences), f"Expected {len(sentences)} embeddings, got {len(embeddings)}."
-            print(len(list(self.store.yield_keys())))
             
         return np.array(embeddings)
 
