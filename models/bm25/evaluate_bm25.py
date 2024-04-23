@@ -25,7 +25,8 @@ class BM25Reranker(DenseRetrievalExactSearch):
         s = s.translate(str.maketrans('', '', string.punctuation))
         return s.strip()
 
-    def rerank(self, queries, passages, **kwargs):
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages = list(zip(*input_to_rerank))
         assert len(set(queries)) == 1
         queries = [queries[0]]
 
@@ -75,4 +76,4 @@ if __name__ == "__main__":
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
         evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
-        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, batch_size=999999)
+        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, batch_size=999999,  do_length_ablation=True)

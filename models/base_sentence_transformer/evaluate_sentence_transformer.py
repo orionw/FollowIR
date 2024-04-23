@@ -54,7 +54,7 @@ class InstructionSentenceTransformer(SentenceTransformer):
             sentences = [(s + self.sep + i).strip() for s, i in zip(sentences, instruction_list)]
             print(sentences[0])
         
-        return super().encode(sentences, batch_size, show_progress_bar, output_value, convert_to_numpy, convert_to_tensor, device, normalize_embeddings)
+        return super().encode(sentences, batch_size=batch_size, show_progress_bar=show_progress_bar, output_value=output_value, convert_to_numpy=convert_to_numpy, convert_to_tensor=convert_to_tensor, device=device, normalize_embeddings=normalize_embeddings)
 
 
 if __name__ == "__main__":
@@ -76,4 +76,4 @@ if __name__ == "__main__":
         logger.info(f"Running task: {task}")
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
         evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
-        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True)
+        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True,  do_length_ablation=True)

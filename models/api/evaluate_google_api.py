@@ -4,7 +4,7 @@ import argparse
 import tqdm
 
 from mteb import MTEB
-from mteb.evaluation.evaluators.InstructionRetrievalEvaluator import DRESModel
+from mteb.evaluation.evaluators.RetrievalEvaluator import DRESModel
 
 from typing import List
 
@@ -97,4 +97,4 @@ if __name__ == "__main__":
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
         evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
-        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True, batch_size=50)
+        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True, do_length_ablation=True, batch_size=50)

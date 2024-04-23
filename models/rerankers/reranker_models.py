@@ -66,7 +66,7 @@ class Reranker(DenseRetrievalExactSearch):
         self.silent = silent
         self.first_print = True
 
-    def predict(self, query, passages, **kwargs) -> list:
+    def predict(self, input_to_rerank, **kwargs) -> list:
         pass
 
 
@@ -132,9 +132,9 @@ class MonoT5Reranker(Reranker):
 
 
     @torch.inference_mode()
-    def predict(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
+   
         if instructions is not None and instructions[0] is not None:
             # print(f"Adding instructions to monot5 queries")
             queries = [f"{q} {i}".strip() for i, q in zip(instructions, queries)]
@@ -227,9 +227,8 @@ Relevant: """
 
 
     @torch.inference_mode()
-    def predict(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
         if instructions is not None and instructions[0] is not None:
             # print(f"Adding instructions to LLAMA queries")
             queries = [self.query_instruct_template.format(instruction=i, query=q).strip() for i, q in zip(instructions, queries)]
@@ -361,9 +360,8 @@ class MonoBERTReranker(Reranker):
 
 
     @torch.inference_mode()
-    def predict(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
         if instructions is not None and instructions[0] is not None:
             # print(f"Adding instructions to MonoBERT queries")
             queries = [f"{q} {i}".strip() for i, q in zip(instructions, queries)]
@@ -399,9 +397,8 @@ class TARTFullReranker(Reranker):
 
 
     @torch.inference_mode()
-    def predict(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
         if instructions is not None and instructions[0] is not None:
             # combine them with the queries with a [SEP] token
             if instructions[0].strip() == "": # empty instruction case, use generic
@@ -469,9 +466,8 @@ class RankLlamaReranker(Reranker):
 
 
     @torch.inference_mode()
-    def predict(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
         if instructions is not None and instructions[0] is not None:
             # print(f"Adding instructions to RankLlama queries")
             queries = [f"{q} {i}".strip() for i, q in zip(instructions, queries)]

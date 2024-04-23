@@ -3,8 +3,8 @@ numpy
 requests>=2.26.0
 scikit_learn>=1.0.2
 scipy
-sentence_transformers==2.4.0
-torch>=1.13.1
+sentence_transformers==2.7.0
+torch>=2.1.1
 tqdm
 rich
 pytrec_eval
@@ -19,3 +19,5 @@ faiss-cpu
 langchain-openai
 nltk
 mteb==1.7.11
+gritlm==1.0.0
+sentencepiece==0.2.0

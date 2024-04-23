@@ -5,7 +5,7 @@ from functools import partial
 from mteb import MTEB
 import torch
 
-from gritlm import GritLM
+from downloaded_gritlm import GritLM
 
 SET_TO_TASK_TO_DS_TO_PROMPT = {
     # https://github.com/microsoft/unilm/blob/16da2f193b9c1dab0a692c6e4380bd43e70a40cd/e5/utils.py#L93
@@ -1212,5 +1212,5 @@ if __name__ == '__main__':
             save_qrels=args.save_qrels,
             top_k=args.top_k,
             overwrite_results=args.overwrite_results,
-            save_corpus_embeddings=True
+            save_corpus_embeddings=True, do_length_ablation=True
         )

@@ -62,6 +62,6 @@ if __name__ == '__main__':
         evaluation = MTEB(tasks=[task], task_langs=['en'], eval_splits = ["test" if task not in ['MSMARCO'] else 'dev'])
         evaluation.run(model,
                        output_folder=args.output_dir,
-                       save_corpus_embeddings=True)
+                       save_corpus_embeddings=True, do_length_ablation=True)
 
 

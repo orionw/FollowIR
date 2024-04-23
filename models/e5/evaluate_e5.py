@@ -119,7 +119,7 @@ def main():
         evaluation = MTEB(tasks=[task], task_langs=['en'])
         evaluation.run(model, eval_splits=["test"],
                        output_folder=args.output_dir,
-                       save_corpus_embeddings=True,
+                       save_corpus_embeddings=True, do_length_ablation=True,
                        batch_size=args.batch_size)
 
 

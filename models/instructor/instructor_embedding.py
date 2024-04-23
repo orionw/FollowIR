@@ -401,7 +401,6 @@ class INSTRUCTOR(SentenceTransformer):
 
 
         sentence_features = []
-        breakpoint()
         for idx in range(num_texts):
             assert isinstance(texts[idx][0], list)
             assert len(texts[idx][0])==2,f"The input should have both instruction and input text"

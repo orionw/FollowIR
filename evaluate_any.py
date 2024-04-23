@@ -19,7 +19,7 @@ def evaluate_any(args):
         cmd = f"python -u models/bge/evaluate_bge.py --model_name_or_path {args.model_name} --output_dir {args.output_dir}"
     
 
-    elif args.model_name in ["openai", "cohere"]:
+    elif args.model_name in ["openai", "cohere", "google"]:
         return f"python models/api/evaluate_api.py --model_name_or_path {args.model_name} --output_dir {args.output_dir}"
 
 

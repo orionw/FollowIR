@@ -36,7 +36,12 @@ if __name__ == "__main__":
         logger.info(f"Running task: {task}")
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
         evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
-        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, batch_size=args.batch_size)
+        task_name_for_scores = task.split("InstructionRetrieval")[0].lower()
+        evaluation.run(model, 
+                       output_folder=args.output_dir,
+                       eval_splits=eval_splits,
+                       batch_size=args.batch_size,
+                       top_k=1000,
+                       previous_results=f"https://huggingface.co/datasets/jhu-clsp/{task_name_for_scores}-instructions-patched/raw/main/empty_scores.json",
+                        do_length_ablation=True)
 
-
-#  python models/rerankers/evaluate_reranker.py --model_name_or_path castorini/monot5-base-msmarco-10k --output_dir results/castorini--monot5-base-msmarco-10k --batch_size 128 --fp_options float16
