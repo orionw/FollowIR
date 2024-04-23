@@ -27,7 +27,7 @@ def evaluate_any(args):
         return f"python -u models/bm25/evaluate_bm25.py --output_dir {args.output_dir}"
     
 
-    elif args.model_name in ["intfloat/e5-small-v2", "intfloat/e5-base-v2", "intfloat/e5-large-v2", "intfloat/e5-small", "intfloat/e5-base", "intfloat/e5-large", "infloat/e5-mistral-7b-instruct"]:
+    elif args.model_name in ["intfloat/e5-small-v2", "intfloat/e5-base-v2", "intfloat/e5-large-v2", "intfloat/e5-small", "intfloat/e5-base", "intfloat/e5-large", "intfloat/e5-mistral-7b-instruct"]:
         if args.model_name == "infloat/e5-mistral-7b-instruct":
             pool_type = "last"  # pool_type should be last
             batch_size = args.batch_size
@@ -42,7 +42,7 @@ def evaluate_any(args):
         cmd = f"python -u models/instructor/evaluate_instructor.py --model_name {args.model_name} --output_dir {args.output_dir}"
 
 
-    elif args.model_name in ["castorini/monobert-large-msmarco", "facebook/tart-full-flan-t5-xl", "castorini/monot5-small-msmarco-10k", "castorini/monot5-base-msmarco-10k", "castorini/monot5-large-msmarco-10k", "castorini/monot5-3b-msmarco-10k", "google/flan-t5-base", "google/flan-t5-large", "google/flan-t5-3b", "meta-llama/Llama-2-7b-hf", "meta-llama/Llama-2-7b-chat-hf", "mistralai/Mistral-7B-Instruct-v0.2"] or "custom_mistral" in args.model_name:
+    elif args.model_name in ["castorini/monobert-large-msmarco", "facebook/tart-full-flan-t5-xl", "castorini/monot5-small-msmarco-10k", "castorini/monot5-base-msmarco-10k", "castorini/monot5-large-msmarco-10k", "castorini/monot5-3b-msmarco-10k", "google/flan-t5-base", "google/flan-t5-large", "google/flan-t5-3b", "meta-llama/Llama-2-7b-hf", "meta-llama/Llama-2-7b-chat-hf", "mistralai/Mistral-7B-Instruct-v0.2", "GritLM"] or "custom_mistral" in args.model_name:
 
         if "custom_mistral" in args.model_name:
             args.model_name = args.model_name.replace("custom_mistral--", ""

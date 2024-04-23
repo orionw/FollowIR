@@ -59,7 +59,6 @@ class RetrievalModel(DRESModel):
             instruction_list = [instructions[q] for q in queries]
             generic = "Given a web search query, retrieve relevant passages that answer the query"
             instruction_list = [generic if i == "" else i for i in instruction_list]
-            instruction_list = [""]
             input_texts = [(q + " " + i).strip() for q, i in zip(queries, instruction_list)]
 
         print(input_texts[0])

@@ -1,40 +1,35 @@
-from langchain.storage import LocalFileStore
-from langchain_openai import OpenAIEmbeddings
-from langchain.embeddings import CacheBackedEmbeddings
-from langchain_community.embeddings import CohereEmbeddings	
 import pandas as pd
 import numpy as np
 import argparse
 import tqdm
 
 from mteb import MTEB
-# from sentence_transformers import SentenceTransformer
 from mteb.evaluation.evaluators.InstructionRetrievalEvaluator import DRESModel
 
+from typing import List
+
+from vertexai.language_models import TextEmbeddingInput, TextEmbeddingModel
 
 
-class APISentenceTransformer(DRESModel):
+
+class APISentenceTransformerGoogle(DRESModel):
 
     def __init__(self, model, **kwargs):
         super().__init__(model, **kwargs)
-        self.embedding_type = model
-        self.embedder = self.load_embedding_model()
+        self.embedder = TextEmbeddingModel.from_pretrained(model)
+        self.model_name = model
 
-
-    def load_embedding_model(self):
-        if self.embedding_type == "openai":
-            underlying_embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
-        else:
-            underlying_embeddings = CohereEmbeddings(model='embed-english-v3.0')
-
-
-        self.store = LocalFileStore(f"./embeddings_cache_{self.embedding_type}/")
-        print(f"Storing at ./embeddings_cache_{self.embedding_type}/")
-
-        cached_embedder = CacheBackedEmbeddings.from_bytes_store(
-            underlying_embeddings, self.store, namespace=underlying_embeddings.model
-        )
-        return cached_embedder
+    def embed_text(
+        self,
+        texts: List[str],
+        task_embed: str,
+        model_name: str = "text-embedding-preview-0409",
+    ) -> List[List[float]]:
+        """Embeds texts with a pre-trained, foundational model."""
+        inputs = [TextEmbeddingInput(text, task_embed) for text in texts]
+        input_lens = [len(item.text) for item in inputs]
+        embeddings = self.embedder.get_embeddings(inputs)
+        return [embedding.values for embedding in embeddings]
 
 
     def encode_queries(self, queries, **kwargs):
@@ -47,29 +42,9 @@ class APISentenceTransformer(DRESModel):
         else:
             input_texts = corpus
         return self.encode(input_texts, **kwargs)
+   
 
-    
-    def embed_api(self, sentences, type):
-        if type == "docs":
-            try:
-                return self.embedder.embed_documents(sentences)
-            except Exception as e:
-                import time
-                time.sleep(60)
-                return self.embedder.embed_documents(sentences)
-        else:
-            assert len(sentences) == 1
-            sentences = sentences[0]
-            try:
-                return [self.embedder.embed_query(sentences)]
-            except Exception as e:
-                import time
-                time.sleep(60)
-                return [self.embedder.embed_query(sentences)]
-        
-    
-
-    def encode(self, sentences, batch_size: int = 100, **kwargs):
+    def encode(self, sentences, batch_size: int = 20, **kwargs):
         """
         Computes sentence embeddings from an API
 
@@ -82,24 +57,23 @@ class APISentenceTransformer(DRESModel):
         if "instructions" in kwargs: # is queries
             instructions = kwargs["instructions"]
             instruction_list = [instructions[q].strip() for q in sentences]
-            sentences = [(s + " " + i).strip() for s, i in zip(sentences, instruction_list)]
+            sentences = [(i + " " + s).strip() for s, i in zip(sentences, instruction_list)]
             print(sentences[0])
             assert len(sentences) == 1
-            embeddings = self.embed_api(sentences, type="queries")
-            print(len(list(self.store.yield_keys())))
+            embeddings = self.embed_text(sentences, "RETRIEVAL_QUERY")
 
         else:
             # is docs
+            batch_size = 10
             embeddings = []
             print(sentences[0], len(sentences))
             iterations = list(range(0, len(sentences), batch_size))
             print(iterations)
             for i in tqdm.tqdm(iterations):
                 batch = sentences[i:i+batch_size]
-                cur_embeds = self.embed_api(batch, type="docs")
+                cur_embeds = self.embed_text(batch, "RETRIEVAL_DOCUMENT")
                 embeddings.extend(cur_embeds)
             assert len(embeddings) == len(sentences), f"Expected {len(sentences)} embeddings, got {len(embeddings)}."
-            print(len(list(self.store.yield_keys())))
             
         return np.array(embeddings)
 
@@ -113,7 +87,7 @@ if __name__ == "__main__":
     parser.add_argument("--task_names", default=None, type=str, nargs='+')
     args = parser.parse_args()
     
-    model = APISentenceTransformer(args.model_name_or_path)
+    model = APISentenceTransformerGoogle(args.model_name_or_path)
 
     if args.task_names is None:
         task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]

@@ -71,7 +71,6 @@ class Reranker(MTEB_Reranker):
         pass
 
 
-
 class MonoT5Reranker(Reranker):
     name: str = "MonoT5"
     prompt_template: str = "Query: {query} Document: {text} Relevant:"
@@ -288,6 +287,22 @@ Relevant (either "true" or "false"): [/INST]"""
         print(f"Using template of {self.template}")
 
 
+class GritLMReranker(MistralReranker):
+    name: str = "GritLM"
+
+    def __init__(self, model_name_or_path: str, **kwargs):
+        model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
+        super().__init__(model_name_or_path, **kwargs)
+        from gritlm import GritLM
+        grit = GritLM("GritLM/GritLM-7B", torch_dtype="auto")
+        self.template = "<|user|>\nRank the passage based on its relevance to the search query (true/false) {query}.\n\n{text}\n\n" \
+                   "Search Query: {query}.\n\n" \
+                   "Determine the passage's relevance to the search query." \
+                   "Only respond with true or false, do not say any other word or explain.\n<|assistant|>\n"
+        self.model = grit.model
+        self.tokenizer = grit.tokenizer
+
+
 class FollowIRReranker(LlamaReranker):
     name: str = "FollowIR"
 
@@ -495,7 +510,6 @@ class RankLlamaReranker(Reranker):
 
 
 
-
 MODEL_DICT = {
     "facebook/tart-full-flan-t5-xl": TARTFullReranker,
     "castorini/monot5-small-msmarco-10k": MonoT5Reranker,
@@ -510,6 +524,7 @@ MODEL_DICT = {
     "meta-llama/Llama-2-7b-hf": LlamaReranker,
     "meta-llama/Llama-2-7b-chat-hf": LlamaReranker,
     "mistralai/Mistral-7B-Instruct-v0.2": MistralReranker,
-    "castorini/rankllama-v1-7b-lora-passage": RankLlamaReranker, # Not working correctly
+    # "castorini/rankllama-v1-7b-lora-passage": RankLlamaReranker, # Not working correctly
     "custom_mistral": FollowIRReranker,
+    "GritLM": GritLMReranker,
 }
