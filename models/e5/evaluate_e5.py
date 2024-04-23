@@ -102,7 +102,7 @@ def main():
     model = RetrievalModel()
 
     if args.task_names is None:
-        task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]
     else:
         task_names = args.task_names
     logger.info('Tasks: {}'.format(task_names))

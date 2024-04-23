@@ -40,11 +40,11 @@ model_order = {
 
 }
 
-MAP_MODEL_ORDER = {v.replace("/", "--"): k for k, v in model_order.items()}
+MAP_MODEL_ORDER = {v.replace("/", "__"): k for k, v in model_order.items()}
 
 
 
-def gather_results(args, dataset_in_table=["RobustInstructionRetrieval", "NewsInstructionRetrieval", "CoreInstructionRetrieval"]):
+def gather_results(args, dataset_in_table=["Robust04InstructionRetrieval", "News21InstructionRetrieval", "Core17InstructionRetrieval"]):
     # go through all in `results` and aggregate them together
     # we care only about the pairwise and rankwise scores, as well as map@1000 and ndcg@5 scores of the original and changed
 
@@ -117,14 +117,14 @@ def gather_results(args, dataset_in_table=["RobustInstructionRetrieval", "NewsIn
     # This step might need to be adjusted based on exact desired format, especially if you have dynamic datasets
     # The list of new column names should be formed based on the datasets and scores present in your original dataframe
     new_column_order = [
-        'main_score RobustInstructionRetrieval', 'rankwise RobustInstructionRetrieval',
-        'main_score NewsInstructionRetrieval',  'rankwise NewsInstructionRetrieval',
-        'main_score CoreInstructionRetrieval', 'rankwise CoreInstructionRetrieval'
+        'main_score Robust04InstructionRetrieval', 'rankwise Robust04InstructionRetrieval',
+        'main_score News21InstructionRetrieval',  'rankwise News21InstructionRetrieval',
+        'main_score Core17InstructionRetrieval', 'rankwise Core17InstructionRetrieval'
     ]
     pivoted_and_ordered_df = pivoted_df.reindex(columns=new_column_order).reset_index()
     # now add an average column at the end for both
-    pivoted_and_ordered_df["main_score_avg"] = pivoted_and_ordered_df[['main_score RobustInstructionRetrieval', 'main_score NewsInstructionRetrieval', 'main_score CoreInstructionRetrieval']].astype(float).mean(axis=1).apply(lambda x: str(round(x, 1)))
-    pivoted_and_ordered_df["rankwise_avg"] = pivoted_and_ordered_df[['rankwise RobustInstructionRetrieval', 'rankwise NewsInstructionRetrieval', 'rankwise CoreInstructionRetrieval']].astype(float).mean(axis=1).apply(lambda x: str(round(x, 1)))
+    pivoted_and_ordered_df["main_score_avg"] = pivoted_and_ordered_df[['main_score Robust04InstructionRetrieval', 'main_score News21InstructionRetrieval', 'main_score Core17InstructionRetrieval']].astype(float).mean(axis=1).apply(lambda x: str(round(x, 1)))
+    pivoted_and_ordered_df["rankwise_avg"] = pivoted_and_ordered_df[['rankwise Robust04InstructionRetrieval', 'rankwise News21InstructionRetrieval', 'rankwise Core17InstructionRetrieval']].astype(float).mean(axis=1).apply(lambda x: str(round(x, 1)))
 
     min_values = {}
     max_values = {}

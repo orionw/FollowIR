@@ -12,7 +12,7 @@ from gather_results import model_order, MAP_MODEL_ORDER
 GRADIENT_STR = """\midpointgradientcell{VALUE}{MIN}{MAX}{0}{neg}{pos}{\opacity}{0}"""
 
 
-def gather_results(args, dataset_in_table=["RobustInstructionRetrieval", "NewsInstructionRetrieval", "CoreInstructionRetrieval"]):
+def gather_results(args, dataset_in_table=["Robust04InstructionRetrieval", "News21InstructionRetrieval", "Core17InstructionRetrieval"]):
     # go through all in `results` and aggregate them together
     # we care only about the pairwise and rankwise scores, as well as map@1000 and ndcg@5 scores of the original and changed
 
@@ -90,9 +90,9 @@ def gather_results(args, dataset_in_table=["RobustInstructionRetrieval", "NewsIn
     # This step might need to be adjusted based on exact desired format, especially if you have dynamic datasets
     # The list of new column names should be formed based on the datasets and scores present in your original dataframe
     new_column_order = [
-        'keywords_score RobustInstructionRetrieval', 'short_query_score RobustInstructionRetrieval','full_score RobustInstructionRetrieval', 
-        'keywords_score NewsInstructionRetrieval', 'short_query_score NewsInstructionRetrieval','full_score NewsInstructionRetrieval',
-        'keywords_score CoreInstructionRetrieval', 'short_query_score CoreInstructionRetrieval', 'full_score CoreInstructionRetrieval',
+        'keywords_score Robust04InstructionRetrieval', 'short_query_score Robust04InstructionRetrieval','full_score Robust04InstructionRetrieval', 
+        'keywords_score News21InstructionRetrieval', 'short_query_score News21InstructionRetrieval','full_score News21InstructionRetrieval',
+        'keywords_score Core17InstructionRetrieval', 'short_query_score Core17InstructionRetrieval', 'full_score Core17InstructionRetrieval',
     ]
     pivoted_and_ordered_df = pivoted_df.reindex(columns=new_column_order).reset_index()
     # Now, your DataFrame is in the desired format. If you want to rename the columns for appearance,

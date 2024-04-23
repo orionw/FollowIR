@@ -16,8 +16,7 @@ from transformers import (
     T5ForConditionalGeneration,
     AutoModelForCausalLM,
 )
-from mteb.evaluation.evaluators.InstructionRetrievalEvaluator import Reranker as MTEB_Reranker
-
+from mteb.evaluation.evaluators.RetrievalEvaluator import DenseRetrievalExactSearch
 # Based on https://github.com/castorini/pygaggle/blob/f54ae53d6183c1b66444fa5a0542301e0d1090f5/pygaggle/rerank/base.py#L63
 prediction_tokens = {
     "castorini/monot5-small-msmarco-10k": ["▁false", "▁true"],
@@ -43,7 +42,7 @@ def chunks(lst, n):
 
 
 
-class Reranker(MTEB_Reranker):
+class Reranker(DenseRetrievalExactSearch):
     def __init__(
         self,
         model_name_or_path: str,
@@ -67,7 +66,7 @@ class Reranker(MTEB_Reranker):
         self.silent = silent
         self.first_print = True
 
-    def rerank(self, query, passages, **kwargs) -> list:
+    def predict(self, query, passages, **kwargs) -> list:
         pass
 
 
@@ -133,7 +132,7 @@ class MonoT5Reranker(Reranker):
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
+    def predict(self, queries, passages, **kwargs):
         assert "instructions" in kwargs
         instructions = kwargs["instructions"]
         if instructions is not None and instructions[0] is not None:
@@ -228,7 +227,7 @@ Relevant: """
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
+    def predict(self, queries, passages, **kwargs):
         assert "instructions" in kwargs
         instructions = kwargs["instructions"]
         if instructions is not None and instructions[0] is not None:
@@ -362,7 +361,7 @@ class MonoBERTReranker(Reranker):
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
+    def predict(self, queries, passages, **kwargs):
         assert "instructions" in kwargs
         instructions = kwargs["instructions"]
         if instructions is not None and instructions[0] is not None:
@@ -400,7 +399,7 @@ class TARTFullReranker(Reranker):
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
+    def predict(self, queries, passages, **kwargs):
         assert "instructions" in kwargs
         instructions = kwargs["instructions"]
         if instructions is not None and instructions[0] is not None:
@@ -470,7 +469,7 @@ class RankLlamaReranker(Reranker):
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
+    def predict(self, queries, passages, **kwargs):
         assert "instructions" in kwargs
         instructions = kwargs["instructions"]
         if instructions is not None and instructions[0] is not None:

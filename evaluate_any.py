@@ -13,7 +13,7 @@ def evaluate_any(args):
     Returns:
     a string of the command to be used
     """
-    args.output_dir = os.path.join(args.output_dir, args.model_name.replace("/", "--"))
+    args.output_dir = os.path.join(args.output_dir, args.model_name.replace("/", "__"))
     
     if args.model_name in ["BAAI/bge-base", "BAAI/bge-large-en", "BAAI/bge-small-en", "BAAI/bge-base-en-v1.5", "BAAI/bge-large-en-v1.5", "BAAI/bge-small-en-v1.5"]:
         cmd = f"python -u models/bge/evaluate_bge.py --model_name_or_path {args.model_name} --output_dir {args.output_dir}"

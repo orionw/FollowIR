@@ -34,7 +34,7 @@ if __name__ == '__main__':
                           pooling_method=args.pooling_method)
 
     if args.task_names is None:
-        task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['eng']).tasks]
     else:
         task_names = args.task_names
 

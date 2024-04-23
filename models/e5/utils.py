@@ -225,9 +225,9 @@ def get_task_def_by_task_name_and_type(task_name: str, task_type: str) -> str:
     elif task_type in ['InstructionRetrieval']:
         # these aren't going to be used except for ablations
         task_name_to_instruct: Dict[str, str] = {
-            'RobustInstructionRetrieval': 'Given a question, retrieve news articles that answer the question',
-            "NewsInstructionRetrieval": "Given a question, retrieve news articles that answer the question",
-            "CoreInstructionRetrieval": "Given a question, retrieve news articles that answer the question",
+            'Robust04InstructionRetrieval': 'Given a question, retrieve news articles that answer the question',
+            "News21InstructionRetrieval": "Given a question, retrieve news articles that answer the question",
+            "Core17InstructionRetrieval": "Given a question, retrieve news articles that answer the question",
         }
         return task_name_to_instruct[task_name]
 
