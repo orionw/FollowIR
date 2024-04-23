@@ -71,7 +71,6 @@ class Reranker(MTEB_Reranker):
         pass
 
 
-
 class MonoT5Reranker(Reranker):
     name: str = "MonoT5"
     prompt_template: str = "Query: {query} Document: {text} Relevant:"
@@ -288,6 +287,89 @@ Relevant (either "true" or "false"): [/INST]"""
         print(f"Using template of {self.template}")
 
 
+class GritLMReranker(MistralReranker):
+    name: str = "GritLM"
+
+    def __init__(self, model_name_or_path: str, **kwargs):
+        model_name_or_path = "mistralai/Mistral-7B-Instruct-v0.2"
+        super().__init__(model_name_or_path, **kwargs)
+        from gritlm import GritLM
+        grit = GritLM("GritLM/GritLM-7B", torch_dtype="auto")
+        self.template = "<|user|>\nRank the passage based on its relevance to the search query (true/false) {query}.\n\n{text}\n\n" \
+                   "Search Query: {query}.\n\n" \
+                   "Determine the passage's relevance to the search query." \
+                   "Only respond with true or false, do not say any other word or explain.\n<|assistant|>\n"
+        self.model = grit.model
+        self.tokenizer = grit.tokenizer
+
+
+
+class GritLMRerankerListWise(Reranker):
+    name: str = "GritLM"
+
+    def __init__(self, model_name_or_path: str, **kwargs):
+        super().__init__( "mistralai/Mistral-7B-Instruct-v0.2", **kwargs)
+        model_name_or_path = "GritLM/GritLM-7B"
+        from gritlm import GritLM
+        self.grit = GritLM("GritLM/GritLM-7B", torch_dtype="auto")
+        self.model = self.grit.model
+        self.tokenizer = self.grit.tokenizer
+
+        self.template = "<|user|>\nI will provide you with {num} passages, each indicated by a numerical identifier []. " \
+                   "Rank the passages based on their relevance to the search query {query}.\n\n{passages}\n\n" \
+                   "Search Query: {query}.\n\n" \
+                   "Rank the {num} passages above based on their relevance to the search query. All the passages " \
+                   "should be included and listed using identifiers, in descending order of relevance. " \
+                   "The output format should be [] > [] > ..., e.g., [4] > [2] > ... " \
+                   "Only respond with the ranking results, do not say any word or explain.\n<|assistant|>\n"
+
+
+    def rerank(self, queries, passages, **kwargs):
+        assert "instructions" in kwargs
+        og_passages = passages
+        instructions = kwargs["instructions"]
+        assert len(set(queries)) == 1, "Only one query is supported"
+
+        if self.first_print:
+            print(f"Using {queries[0]}")
+            self.first_print = False
+              
+        cur_query = queries[0]
+        num = 1
+        passages = ''
+        cur_prompt = None
+        all_ids = {}
+        scores = []
+        old_orders = []
+        i = 0
+        while len(self.tokenizer(self.template.format(num=num, query=cur_query, passages=passages), return_tensors="pt")["input_ids"][0])<1900:
+            print(i)
+            cur_prompt = self.template.format(num=num, query=cur_query, passages=og_passages)
+            passages += f"[{num}] {og_passages[i]}\n"
+            i += 1
+            old_orders.append(i)
+            all_ids[num] = i
+            num += 1
+        inputs = self.tokenizer(cur_prompt, return_tensors="pt")["input_ids"].to(self.model.device)
+        generation_output = self.grit.generate(inputs, max_new_tokens=100, temperature=0.7, do_sample=True)
+        outputs = self.tokenizer.batch_decode(generation_output[:, inputs.shape[-1]:])[0].strip('</s>').strip()
+        components = outputs.split('>')
+        new_orders = []
+        for idx,c in enumerate(components):
+            try:
+                new_orders.append(all_ids[int(c.strip().strip('[').strip(']').strip())])
+            except:
+                print(len(old_orders),outputs)
+                pass
+        # start with 1000 and decrease for each in new_orders
+        list_of_scores = reversed(list(range(1000)))
+        # give these to the new_orders
+        breakpoint()
+        scores = [list_of_scores[i] for i in new_orders] # actual scores don't matter, just reranking
+
+        return scores
+
+
 class FollowIRReranker(LlamaReranker):
     name: str = "FollowIR"
 
@@ -495,7 +577,6 @@ class RankLlamaReranker(Reranker):
 
 
 
-
 MODEL_DICT = {
     "facebook/tart-full-flan-t5-xl": TARTFullReranker,
     "castorini/monot5-small-msmarco-10k": MonoT5Reranker,
@@ -510,6 +591,8 @@ MODEL_DICT = {
     "meta-llama/Llama-2-7b-hf": LlamaReranker,
     "meta-llama/Llama-2-7b-chat-hf": LlamaReranker,
     "mistralai/Mistral-7B-Instruct-v0.2": MistralReranker,
-    "castorini/rankllama-v1-7b-lora-passage": RankLlamaReranker, # Not working correctly
+    # "castorini/rankllama-v1-7b-lora-passage": RankLlamaReranker, # Not working correctly
     "custom_mistral": FollowIRReranker,
+    "GritLM": GritLMReranker,
+    "GritLMList": GritLMRerankerListWise,
 }
