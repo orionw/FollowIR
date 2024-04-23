@@ -28,7 +28,7 @@ if __name__ == "__main__":
         model = MODEL_DICT["custom_mistral"](args.model_name_or_path, fp_options=args.fp_options)
 
     if args.task_names is None:
-        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['eng']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]
     else:
         task_names = args.task_names
 
