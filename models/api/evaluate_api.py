@@ -49,13 +49,23 @@ class APISentenceTransformer(DRESModel):
         return self.encode(input_texts, **kwargs)
 
     
-    def embed_api(self, sentences):
-        try:
-            return self.embedder.embed_documents(sentences)
-        except Exception as e:
-            import time
-            time.sleep(60)
-            return self.embedder.embed_documents(sentences)
+    def embed_api(self, sentences, type):
+        if type == "docs":
+            try:
+                return self.embedder.embed_documents(sentences)
+            except Exception as e:
+                import time
+                time.sleep(60)
+                return self.embedder.embed_documents(sentences)
+        else:
+            assert len(sentences) == 1
+            sentences = sentences[0]
+            try:
+                return [self.embedder.embed_query(sentences)]
+            except Exception as e:
+                import time
+                time.sleep(60)
+                return [self.embedder.embed_query(sentences)]
         
     
 
@@ -75,7 +85,7 @@ class APISentenceTransformer(DRESModel):
             sentences = [(s + " " + i).strip() for s, i in zip(sentences, instruction_list)]
             print(sentences[0])
             assert len(sentences) == 1
-            embeddings = self.embed_api(sentences)
+            embeddings = self.embed_api(sentences, type="queries")
             print(len(list(self.store.yield_keys())))
 
         else:
@@ -86,7 +96,7 @@ class APISentenceTransformer(DRESModel):
             print(iterations)
             for i in tqdm.tqdm(iterations):
                 batch = sentences[i:i+batch_size]
-                cur_embeds = self.embed_api(batch)
+                cur_embeds = self.embed_api(batch, type="docs")
                 embeddings.extend(cur_embeds)
             assert len(embeddings) == len(sentences), f"Expected {len(sentences)} embeddings, got {len(embeddings)}."
             print(len(list(self.store.yield_keys())))
