@@ -36,7 +36,7 @@ model_order = {
     "Llama-2-7B-chat": "meta-llama/Llama-2-7b-chat-hf",
     "GritLM-Reranker": "GritLM",
     "Mistral-7B-instruct": "mistralai/Mistral-7B-Instruct-v0.2",
-    "FollowIR-7B": "custom_mistral----home--hltcoe--oweller--my_exps--LLaMA-Factory--followir-v2-232",
+    "FollowIR-7B": "jhu-clsp/FollowIR-7B",
 
 }
 

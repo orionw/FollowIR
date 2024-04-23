@@ -43,6 +43,7 @@ class InstructionSentenceTransformer(SentenceTransformer):
         :return:
            By default, a list of tensors is returned. If convert_to_tensor, a stacked tensor is returned. If convert_to_numpy, a numpy matrix is returned.
         """
+        # NOTE: this is handled for all models except TART in MTEB's new code, but leaving this in case it's easier for others to modify
         if "instructions" in kwargs: # is queries
             instructions = kwargs["instructions"]
             instruction_list = [instructions[q].strip() for q in sentences]
