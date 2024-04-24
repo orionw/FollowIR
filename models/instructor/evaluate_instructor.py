@@ -28,7 +28,7 @@ if __name__ == '__main__':
         task_names = args.task_names
 
     for task in task_names:
-        evaluation = MTEB(tasks=[task],task_langs=["en"])
-        evaluation.run(model, output_folder=args.output_dir, eval_splits=[args.split],args=args, save_corpus_embeddings=True, do_length_ablation=True)
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)
+        evaluation.run(model, output_folder=args.output_dir, eval_splits=[args.split],args=args, save_corpus_embeddings=True)
 
     print("--DONE--")

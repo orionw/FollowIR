@@ -35,7 +35,7 @@ if __name__ == "__main__":
     for task in task_names:
         logger.info(f"Running task: {task}")
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
-        evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)  # Remove "en" for running all languages
         task_name_for_scores = task.split("InstructionRetrieval")[0].lower()
         evaluation.run(model, 
                        output_folder=args.output_dir,

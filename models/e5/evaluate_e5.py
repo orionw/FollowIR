@@ -116,10 +116,10 @@ def main():
         model.set_prompt(prompt=prompt)
         logger.info('Set prompt: {}'.format(prompt))
 
-        evaluation = MTEB(tasks=[task], task_langs=['en'])
+        evaluation = MTEB(tasks=[task], task_langs=['en'], do_length_ablation=True)
         evaluation.run(model, eval_splits=["test"],
                        output_folder=args.output_dir,
-                       save_corpus_embeddings=True, do_length_ablation=True,
+                       save_corpus_embeddings=True,
                        batch_size=args.batch_size)
 
 

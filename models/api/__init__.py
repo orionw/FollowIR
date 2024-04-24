@@ -62,5 +62,5 @@ if __name__ == "__main__":
 
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
-        evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)  # Remove "en" for running all languages
         evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits)

@@ -93,7 +93,6 @@ class APISentenceTransformer(DRESModel):
             embeddings = []
             print(sentences[0], len(sentences))
             iterations = list(range(0, len(sentences), batch_size))
-            print(iterations)
             for i in tqdm.tqdm(iterations):
                 batch = sentences[i:i+batch_size]
                 cur_embeds = self.embed_api(batch, type="docs")
@@ -122,5 +121,5 @@ if __name__ == "__main__":
 
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
-        evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
-        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True, do_length_ablation=True, batch_size=50)
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)  # Remove "en" for running all languages
+        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True, batch_size=50)

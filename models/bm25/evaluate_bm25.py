@@ -26,7 +26,7 @@ class BM25Reranker(DenseRetrievalExactSearch):
         return s.strip()
 
     def predict(self, input_to_rerank, **kwargs):
-        queries, passages = list(zip(*input_to_rerank))
+        queries, passages, instructions = list(zip(*input_to_rerank))
         assert len(set(queries)) == 1
         queries = [queries[0]]
 
@@ -35,14 +35,10 @@ class BM25Reranker(DenseRetrievalExactSearch):
         print(tokenized_corpus[0][:10])
         self.bm25 = BM25Okapi(tokenized_corpus)
             
-        if "instructions" in kwargs: # is queries
-            instructions = kwargs["instructions"]
-            assert len(set(instructions)) == 1
-            instructions = [instructions[0]]
-            instruction_list = [self.clean(i.strip()) for i in instructions]
-        else:
-            instructions = [""]
-
+        assert len(set(instructions)) == 1
+        instructions = [instructions[0]]
+        instruction_list = [self.clean(i.strip()) for i in instructions]
+ 
         query_list = [self.clean(q) for q in queries]
         ready_queries = [(s + " " + i).strip() for s, i in zip(query_list, instruction_list)]
         assert len(ready_queries) == 1
@@ -75,5 +71,13 @@ if __name__ == "__main__":
 
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
-        evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
-        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, batch_size=999999,  do_length_ablation=True)
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)  # Remove "en" for running all languages
+        task_name_for_scores = task.split("InstructionRetrieval")[0].lower()
+        evaluation.run(model, 
+                       output_folder=args.output_dir, 
+                       eval_splits=eval_splits, 
+                       batch_size=999999,  
+                       do_length_ablation=True,
+                       top_k=1000,
+                       previous_results=f"https://huggingface.co/datasets/jhu-clsp/{task_name_for_scores}-instructions-patched/raw/main/empty_scores.json",
+                        )

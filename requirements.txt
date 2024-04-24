@@ -13,10 +13,7 @@ transformers>=4.37.2
 datasets>=2.16.1
 wandb
 rank_bm25
-langchain
-openai
 faiss-cpu
-langchain-openai
 nltk
 mteb==1.7.11
 gritlm==1.0.0

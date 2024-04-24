@@ -15,7 +15,7 @@ from vertexai.language_models import TextEmbeddingInput, TextEmbeddingModel
 class APISentenceTransformerGoogle(DRESModel):
 
     def __init__(self, model, **kwargs):
-        super().__init__(model, **kwargs)
+        super().__init__(model: str = "text-embedding-preview-0409", **kwargs)
         self.embedder = TextEmbeddingModel.from_pretrained(model)
         self.model_name = model
 
@@ -23,11 +23,9 @@ class APISentenceTransformerGoogle(DRESModel):
         self,
         texts: List[str],
         task_embed: str,
-        model_name: str = "text-embedding-preview-0409",
     ) -> List[List[float]]:
         """Embeds texts with a pre-trained, foundational model."""
         inputs = [TextEmbeddingInput(text, task_embed) for text in texts]
-        input_lens = [len(item.text) for item in inputs]
         embeddings = self.embedder.get_embeddings(inputs)
         return [embedding.values for embedding in embeddings]
 
@@ -96,5 +94,5 @@ if __name__ == "__main__":
 
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
-        evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
-        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True, do_length_ablation=True, batch_size=50)
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)  # Remove "en" for running all languages
+        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True, batch_size=50)

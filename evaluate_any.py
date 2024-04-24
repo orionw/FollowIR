@@ -20,6 +20,8 @@ def evaluate_any(args):
     
 
     elif args.model_name in ["openai", "cohere", "google"]:
+        if args.model_name == "google":
+            return f"python models/api/evaluate_google_api.py --model_name_or_path text-embedding-preview-0409 --output_dir {args.output_dir}"
         return f"python models/api/evaluate_api.py --model_name_or_path {args.model_name} --output_dir {args.output_dir}"
 
 
@@ -42,7 +44,7 @@ def evaluate_any(args):
         cmd = f"python -u models/instructor/evaluate_instructor.py --model_name {args.model_name} --output_dir {args.output_dir}"
 
 
-    elif args.model_name in ["castorini/monobert-large-msmarco", "facebook/tart-full-flan-t5-xl", "castorini/monot5-small-msmarco-10k", "castorini/monot5-base-msmarco-10k", "castorini/monot5-large-msmarco-10k", "castorini/monot5-3b-msmarco-10k", "google/flan-t5-base", "google/flan-t5-large", "google/flan-t5-3b", "meta-llama/Llama-2-7b-hf", "meta-llama/Llama-2-7b-chat-hf", "mistralai/Mistral-7B-Instruct-v0.2", "GritLM"] or "custom_mistral" in args.model_name:
+    elif args.model_name in ["castorini/monobert-large-msmarco", "facebook/tart-full-flan-t5-xl", "castorini/monot5-small-msmarco-10k", "castorini/monot5-base-msmarco-10k", "castorini/monot5-large-msmarco-10k", "castorini/monot5-3b-msmarco-10k", "google/flan-t5-base", "google/flan-t5-large", "google/flan-t5-3b", "meta-llama/Llama-2-7b-hf", "meta-llama/Llama-2-7b-chat-hf", "mistralai/Mistral-7B-Instruct-v0.2", "GritLM", "jhu-clsp/FollowIR-7B"] or "custom_mistral" in args.model_name:
 
         if "custom_mistral" in args.model_name:
             args.model_name = args.model_name.replace("custom_mistral--", ""
@@ -56,7 +58,7 @@ def evaluate_any(args):
 
     else:
         if 'tart-dual-contriever' in args.model_name:
-            args.model_name = "orionweller/tart-dual-contriever-msmarco-copy"
+            args.model_name = "orionweller/tart-dual-contriever-msmarco"
 
         cmd = f"python -u models/base_sentence_transformer/evaluate_sentence_transformer.py --model_name_or_path {args.model_name} --output_dir {args.output_dir}"
 

@@ -1203,7 +1203,7 @@ if __name__ == '__main__':
             # else:
                 # model.encode = partial(model.encode, instruction=instruction)
         eval_splits = ["test" if task_name not in ['MSMARCO'] else 'dev']
-        evaluation = MTEB(tasks=[task_name], task_langs=['en'])
+        evaluation = MTEB(tasks=[task_name], task_langs=['en'], do_length_ablation=True)
         evaluation.run(
             model,
             output_folder=output_folder,
@@ -1212,5 +1212,5 @@ if __name__ == '__main__':
             save_qrels=args.save_qrels,
             top_k=args.top_k,
             overwrite_results=args.overwrite_results,
-            save_corpus_embeddings=True, do_length_ablation=True
+            save_corpus_embeddings=True
         )

@@ -316,6 +316,7 @@ Relevant (only output one word, either "true" or "false"): [/INST] """
         # self.query_instruct_template = "\"{query}\", details: \"{instruction}\""
         print(f"Using query_instruct_template of {self.query_instruct_template}")
         print(f"Using template of {self.template}")
+        print(f"Using FollowIR-7B")
 
 
 
@@ -520,6 +521,6 @@ MODEL_DICT = {
     "meta-llama/Llama-2-7b-chat-hf": LlamaReranker,
     "mistralai/Mistral-7B-Instruct-v0.2": MistralReranker,
     # "castorini/rankllama-v1-7b-lora-passage": RankLlamaReranker, # Not working correctly
-    "custom_mistral": FollowIRReranker,
+    "jhu-clsp/FollowIR-7B": FollowIRReranker,
     "GritLM": GritLMReranker,
 }

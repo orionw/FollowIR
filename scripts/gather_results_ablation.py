@@ -24,8 +24,8 @@ def gather_results(args, dataset_in_table=["Robust04InstructionRetrieval", "News
             data = json.load(f)["test"] # all on test set
 
             # map@1000 and ndcg@5
-            map1000 = data["individual"]["base"]["map_at_1000"]
-            ndcg5 = data["individual"]["base"]["ndcg_at_5"]
+            map1000 = data["length_ablation"]["base"]["map_at_1000"]
+            ndcg5 = data["length_ablation"]["base"]["ndcg_at_5"]
 
             # map@1000 and ndcg@5
             map1000_full = data["individual"]["original"]["map_at_1000"]
