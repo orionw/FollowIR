@@ -16,6 +16,7 @@ model2category = {
     "MonoT5-3B": "No Instruction Training",
     "Cohere v3 English": "Instruct-Tuned LLMs and APIs",
     "OpenAI v3 Large": "Instruct-Tuned LLMs and APIs",
+    "Google Gecko": "Instruct-Tuned LLMs and APIs",
     # now these are instruction-tuned in some sense
     "E5-mistral": "Uses Instructions in Training",
     "TART-Contriever": "Uses Instructions in Training",
@@ -31,6 +32,7 @@ model2category = {
     # LLMs/large rerankers
     "Llama-2-7B": "Instruct-Tuned LLMs and APIs",
     "Llama-2-7B-chat": "Instruct-Tuned LLMs and APIs",
+    "GritLM-Reranker": "Instruct-Tuned LLMs and APIs",
     "Mistral-7B-instruct": "Instruct-Tuned LLMs and APIs",
     "FollowIR-7B": "Instruct-Tuned LLMs and APIs",
 

@@ -18,3 +18,4 @@ nltk
 mteb==1.7.11
 gritlm==1.0.0
 sentencepiece==0.2.0
+seaborn

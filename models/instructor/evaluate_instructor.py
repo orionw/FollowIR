@@ -3,7 +3,7 @@ import sys
 import logging
 import argparse
 from mteb import MTEB
-from instructor_embedding import INSTRUCTOR
+from instructor_embedding import Instructor
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser()
@@ -20,7 +20,7 @@ if __name__ == '__main__':
     # from functools import partialmethod
     #
     # tqdm.__init__ = partialmethod(tqdm.__init__, disable=True)
-    model = INSTRUCTOR(args.model_name, cache_folder=args.cache_dir)
+    model = Instructor(args.model_name, cache_folder=args.cache_dir)
 
     if args.task_names is None:
         task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]

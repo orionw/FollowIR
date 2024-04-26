@@ -11,29 +11,30 @@ GRADIENT_STR = """\midpointgradientcell{VALUE}{MIN}{MAX}{MIDPOINT}{neg}{pos}{\op
 
 model_order = {
     # non instruction tuned
-    "BM25": "bm25",
-    "E5-base-v2": "intfloat/e5-base-v2",
-    "E5-large-v2": "intfloat/e5-large-v2",
-    "Contriever": "facebook/contriever-msmarco",
     "MonoBERT": "castorini/monobert-large-msmarco",
+    "E5-base-v2": "intfloat/e5-base-v2",
     "MonoT5-base": "castorini/monot5-base-msmarco-10k",
+    "Contriever": "facebook/contriever-msmarco",
+    "E5-large-v2": "intfloat/e5-large-v2",
+    "BM25": "bm25",
     "MonoT5-3B": "castorini/monot5-3b-msmarco-10k",
-    "Cohere v3 English": "cohere",
+    # api models
     "OpenAI v3 Large": "openai",
-    "Google Gecko": "google-gecko-v2",
+    "Cohere v3 English": "cohere",
+    "Google Gecko": "google",
     # now these are instruction-tuned in some sense
-    "BGE-base": "BAAI/bge-base-en",
-    "BGE-large": "BAAI/bge-large-en",
-    "TART-Contriever": "tart-dual-contriever-msmarco",
+    "E5-mistral": "intfloat/e5-mistral-7b-instruct",
     "INSTRUCTOR-base": "hkunlp/instructor-base",
+    "BGE-base": "BAAI/bge-base-en",
+    "TART-Contriever": "orionweller/tart-dual-contriever-msmarco",
+    "BGE-large": "BAAI/bge-large-en",
     "INSTRUCTOR-xl": "hkunlp/instructor-xl",
-    "TART-FLAN-T5-xl": "facebook/tart-full-flan-t5-xl",
-    "E5-mistral": "intfloat--e5-mistral-7b-instruct",
     "GritLM-7B": "GritLM/GritLM-7B",
+    "TART-FLAN-T5-xl": "facebook/tart-full-flan-t5-xl",
+    # rerankers
     "FLAN-T5-base": "google/flan-t5-base",
-    "FLAN-T5-large": "google/flan-t5-large",
-    "Llama-2-7B": "meta-llama/Llama-2-7b-hf",
     "Llama-2-7B-chat": "meta-llama/Llama-2-7b-chat-hf",
+    "FLAN-T5-large": "google/flan-t5-large",
     "GritLM-Reranker": "GritLM",
     "Mistral-7B-instruct": "mistralai/Mistral-7B-Instruct-v0.2",
     "FollowIR-7B": "jhu-clsp/FollowIR-7B",
@@ -148,7 +149,8 @@ def gather_results(args, dataset_in_table=["Robust04InstructionRetrieval", "News
     # add a column at the beginning that is empty
     pivoted_and_ordered_df.insert(0, "empty", "")
     
-    pivoted_and_ordered_df.to_latex(os.path.join(args.results_dir, "all_results.tex"), index=False)
+    with pd.option_context("max_colwidth", 1000):
+        pivoted_and_ordered_df.to_latex(os.path.join(args.results_dir, "all_results.tex"), index=False, escape=None)
     print(f"Saved to {os.path.join(args.results_dir, 'all_results.tex')}")
     print(f"Saved to {os.path.join(args.results_dir, 'all_results.csv')}")
 
