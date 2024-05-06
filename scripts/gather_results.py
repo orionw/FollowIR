@@ -26,7 +26,7 @@ model_order = {
     "E5-mistral": "intfloat/e5-mistral-7b-instruct",
     "INSTRUCTOR-base": "hkunlp/instructor-base",
     "BGE-base": "BAAI/bge-base-en",
-    "TART-Contriever": "orionweller/tart-dual-contriever-msmarco",
+    "TART-Contriever": "tart-dual-contriever-msmarco",
     "BGE-large": "BAAI/bge-large-en",
     "INSTRUCTOR-xl": "hkunlp/instructor-xl",
     "GritLM-7B": "GritLM/GritLM-7B",

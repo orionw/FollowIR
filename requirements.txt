@@ -15,7 +15,9 @@ wandb
 rank_bm25
 faiss-cpu
 nltk
-mteb==1.7.11
+mteb==1.7.27
 gritlm==1.0.0
 sentencepiece==0.2.0
 seaborn
+pandas==2.02
+mteb==1.7.32
