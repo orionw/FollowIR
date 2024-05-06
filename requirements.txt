@@ -20,4 +20,4 @@ gritlm==1.0.0
 sentencepiece==0.2.0
 seaborn
 pandas==2.02
-mteb==1.7.32
+mteb==1.7.64
