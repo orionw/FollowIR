@@ -3,7 +3,7 @@ import sys
 import logging
 import argparse
 from mteb import MTEB
-from instructor_embedding import INSTRUCTOR
+from instructor_embedding import Instructor
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser()
@@ -20,15 +20,15 @@ if __name__ == '__main__':
     # from functools import partialmethod
     #
     # tqdm.__init__ = partialmethod(tqdm.__init__, disable=True)
-    model = INSTRUCTOR(args.model_name, cache_folder=args.cache_dir)
+    model = Instructor(args.model_name, cache_folder=args.cache_dir)
 
     if args.task_names is None:
-        task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]
     else:
         task_names = args.task_names
 
     for task in task_names:
-        evaluation = MTEB(tasks=[task],task_langs=["en"])
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)
         evaluation.run(model, output_folder=args.output_dir, eval_splits=[args.split],args=args, save_corpus_embeddings=True)
 
     print("--DONE--")

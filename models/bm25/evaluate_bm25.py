@@ -2,8 +2,7 @@ import argparse
 
 from mteb import MTEB
 from rank_bm25 import BM25Okapi
-from mteb.evaluation.evaluators.InstructionRetrievalEvaluator import Reranker as MTEB_Reranker
-
+from mteb.evaluation.evaluators.RetrievalEvaluator import DenseRetrievalExactSearch
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 import string
@@ -12,7 +11,7 @@ stemmer = PorterStemmer()
 stop_words = set(stopwords.words('english'))
 
 
-class BM25Reranker(MTEB_Reranker):
+class BM25Reranker(DenseRetrievalExactSearch):
 
     def __init__(self, **kwargs):
         super().__init__("bm25", **kwargs)
@@ -26,7 +25,8 @@ class BM25Reranker(MTEB_Reranker):
         s = s.translate(str.maketrans('', '', string.punctuation))
         return s.strip()
 
-    def rerank(self, queries, passages, **kwargs):
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
         assert len(set(queries)) == 1
         queries = [queries[0]]
 
@@ -35,14 +35,10 @@ class BM25Reranker(MTEB_Reranker):
         print(tokenized_corpus[0][:10])
         self.bm25 = BM25Okapi(tokenized_corpus)
             
-        if "instructions" in kwargs: # is queries
-            instructions = kwargs["instructions"]
-            assert len(set(instructions)) == 1
-            instructions = [instructions[0]]
-            instruction_list = [self.clean(i.strip()) for i in instructions]
-        else:
-            instructions = [""]
-
+        assert len(set(instructions)) == 1
+        instructions = [instructions[0]]
+        instruction_list = [self.clean(i.strip()) for i in instructions]
+ 
         query_list = [self.clean(q) for q in queries]
         ready_queries = [(s + " " + i).strip() for s, i in zip(query_list, instruction_list)]
         assert len(ready_queries) == 1
@@ -69,11 +65,19 @@ if __name__ == "__main__":
     model = BM25Reranker()
 
     if args.task_names is None:
-        task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]
     else:
         task_names = args.task_names
 
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
-        evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
-        evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, batch_size=999999)
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)  # Remove "en" for running all languages
+        task_name_for_scores = task.split("InstructionRetrieval")[0].lower()
+        evaluation.run(model, 
+                       output_folder=args.output_dir, 
+                       eval_splits=eval_splits, 
+                       batch_size=999999,  
+                       do_length_ablation=True,
+                       top_k=1000,
+                       previous_results=f"https://huggingface.co/datasets/jhu-clsp/{task_name_for_scores}-instructions-patched/raw/main/empty_scores.json",
+                        )

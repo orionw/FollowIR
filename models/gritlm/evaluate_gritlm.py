@@ -5,7 +5,7 @@ from functools import partial
 from mteb import MTEB
 import torch
 
-from gritlm import GritLM
+from downloaded_gritlm import GritLM
 
 SET_TO_TASK_TO_DS_TO_PROMPT = {
     # https://github.com/microsoft/unilm/blob/16da2f193b9c1dab0a692c6e4380bd43e70a40cd/e5/utils.py#L93
@@ -1161,7 +1161,7 @@ if __name__ == '__main__':
 
     kwargs = {"task_langs": ['en']}
     if args.task_names is None:
-        task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]
     else:
         task_names = args.task_names
     
@@ -1203,7 +1203,7 @@ if __name__ == '__main__':
             # else:
                 # model.encode = partial(model.encode, instruction=instruction)
         eval_splits = ["test" if task_name not in ['MSMARCO'] else 'dev']
-        evaluation = MTEB(tasks=[task_name], task_langs=['en'])
+        evaluation = MTEB(tasks=[task_name], task_langs=['en'], do_length_ablation=True)
         evaluation.run(
             model,
             output_folder=output_folder,

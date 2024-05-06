@@ -3,8 +3,8 @@ numpy
 requests>=2.26.0
 scikit_learn>=1.0.2
 scipy
-sentence_transformers==2.4.0
-torch>=1.13.1
+sentence_transformers==2.7.0
+torch>=2.1.1
 tqdm
 rich
 pytrec_eval
@@ -13,8 +13,11 @@ transformers>=4.37.2
 datasets>=2.16.1
 wandb
 rank_bm25
-langchain
-openai
 faiss-cpu
-langchain-openai
 nltk
+mteb==1.7.27
+gritlm==1.0.0
+sentencepiece==0.2.0
+seaborn
+pandas==2.02
+mteb==1.7.64

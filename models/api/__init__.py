@@ -2,8 +2,7 @@ import argparse
 
 from mteb import MTEB
 from rank_bm25 import BM25Okapi
-from mteb.evaluation.evaluators.InstructionRetrievalEvaluator import Reranker as MTEB_Reranker
-
+from mteb.evaluation.evaluators.RetrievalEvaluator import DenseRetrievalExactSearch
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 
@@ -57,11 +56,11 @@ if __name__ == "__main__":
     model = APIModel(args.model_name_or_path)
 
     if args.task_names is None:
-        task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]
     else:
         task_names = args.task_names
 
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
-        evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)  # Remove "en" for running all languages
         evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits)

@@ -16,8 +16,7 @@ from transformers import (
     T5ForConditionalGeneration,
     AutoModelForCausalLM,
 )
-from mteb.evaluation.evaluators.InstructionRetrievalEvaluator import Reranker as MTEB_Reranker
-
+from mteb.evaluation.evaluators.RetrievalEvaluator import DenseRetrievalExactSearch
 # Based on https://github.com/castorini/pygaggle/blob/f54ae53d6183c1b66444fa5a0542301e0d1090f5/pygaggle/rerank/base.py#L63
 prediction_tokens = {
     "castorini/monot5-small-msmarco-10k": ["▁false", "▁true"],
@@ -43,7 +42,7 @@ def chunks(lst, n):
 
 
 
-class Reranker(MTEB_Reranker):
+class Reranker(DenseRetrievalExactSearch):
     def __init__(
         self,
         model_name_or_path: str,
@@ -67,7 +66,7 @@ class Reranker(MTEB_Reranker):
         self.silent = silent
         self.first_print = True
 
-    def rerank(self, query, passages, **kwargs) -> list:
+    def predict(self, input_to_rerank, **kwargs) -> list:
         pass
 
 
@@ -133,9 +132,9 @@ class MonoT5Reranker(Reranker):
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
+   
         if instructions is not None and instructions[0] is not None:
             # print(f"Adding instructions to monot5 queries")
             queries = [f"{q} {i}".strip() for i, q in zip(instructions, queries)]
@@ -228,9 +227,8 @@ Relevant: """
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
         if instructions is not None and instructions[0] is not None:
             # print(f"Adding instructions to LLAMA queries")
             queries = [self.query_instruct_template.format(instruction=i, query=q).strip() for i, q in zip(instructions, queries)]
@@ -318,6 +316,7 @@ Relevant (only output one word, either "true" or "false"): [/INST] """
         # self.query_instruct_template = "\"{query}\", details: \"{instruction}\""
         print(f"Using query_instruct_template of {self.query_instruct_template}")
         print(f"Using template of {self.template}")
+        print(f"Using FollowIR-7B")
 
 
 
@@ -362,9 +361,8 @@ class MonoBERTReranker(Reranker):
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
         if instructions is not None and instructions[0] is not None:
             # print(f"Adding instructions to MonoBERT queries")
             queries = [f"{q} {i}".strip() for i, q in zip(instructions, queries)]
@@ -400,9 +398,8 @@ class TARTFullReranker(Reranker):
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
         if instructions is not None and instructions[0] is not None:
             # combine them with the queries with a [SEP] token
             if instructions[0].strip() == "": # empty instruction case, use generic
@@ -470,9 +467,8 @@ class RankLlamaReranker(Reranker):
 
 
     @torch.inference_mode()
-    def rerank(self, queries, passages, **kwargs):
-        assert "instructions" in kwargs
-        instructions = kwargs["instructions"]
+    def predict(self, input_to_rerank, **kwargs):
+        queries, passages, instructions = list(zip(*input_to_rerank))
         if instructions is not None and instructions[0] is not None:
             # print(f"Adding instructions to RankLlama queries")
             queries = [f"{q} {i}".strip() for i, q in zip(instructions, queries)]
@@ -525,6 +521,6 @@ MODEL_DICT = {
     "meta-llama/Llama-2-7b-chat-hf": LlamaReranker,
     "mistralai/Mistral-7B-Instruct-v0.2": MistralReranker,
     # "castorini/rankllama-v1-7b-lora-passage": RankLlamaReranker, # Not working correctly
-    "custom_mistral": FollowIRReranker,
+    "jhu-clsp/FollowIR-7B": FollowIRReranker,
     "GritLM": GritLMReranker,
 }

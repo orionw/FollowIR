@@ -16,6 +16,7 @@ model2category = {
     "MonoT5-3B": "No Instruction Training",
     "Cohere v3 English": "Instruct-Tuned LLMs and APIs",
     "OpenAI v3 Large": "Instruct-Tuned LLMs and APIs",
+    "Google Gecko": "Instruct-Tuned LLMs and APIs",
     # now these are instruction-tuned in some sense
     "E5-mistral": "Uses Instructions in Training",
     "TART-Contriever": "Uses Instructions in Training",
@@ -26,11 +27,12 @@ model2category = {
     "BGE-large": "Uses Instructions in Training",
     "TART-FLAN-T5-xl": "Uses Instructions in Training",
     "GritLM-7B": "Uses Instructions in Training",
-    "FLAN-T5-base": "Instruct-Tuned LLMs and APIs",
+    # "FLAN-T5-base": "Instruct-Tuned LLMs and APIs",
     "FLAN-T5-large": "Instruct-Tuned LLMs and APIs",
     # LLMs/large rerankers
-    "Llama-2-7B": "Instruct-Tuned LLMs and APIs",
-    "Llama-2-7B-chat": "Instruct-Tuned LLMs and APIs",
+    # "Llama-2-7B": "Instruct-Tuned LLMs and APIs",
+    # "Llama-2-7B-chat": "Instruct-Tuned LLMs and APIs",
+    "GritLM-Reranker": "Instruct-Tuned LLMs and APIs",
     "Mistral-7B-instruct": "Instruct-Tuned LLMs and APIs",
     "FollowIR-7B": "Instruct-Tuned LLMs and APIs",
 
@@ -39,12 +41,18 @@ model2category = {
 def make_ablation_plot(args):
     df = pd.read_csv(args.file, header=0, index_col=None)
     df = df[df.dataset.apply(lambda x: "robust" in x.lower())]
+    # keep only the models we care about
+    df = df[df.model.isin(model2category.keys())]
     df["category"] = df.model.apply(lambda x: model2category[x])
 
     # change TART models to just be TART-FLAN and TART-dual
     df["model"] = df["model"].apply(lambda x: x.replace("TART-Contriever", "TART-dual").replace("TART-FLAN-T5-xl", "TART-FLAN"))
     # make INSTRUCTOR-base to just be INSTRUCTOR-b and INSTRUCTOR-xl to INSTRUCTOR-x
     df["model"] = df["model"].apply(lambda x: x.replace("INSTRUCTOR-base", "INSTRUCTOR-b"))#.replace("INSTRUCTOR-xl", "INSTRUCTOR-x"))
+    # rename OpenAI v3 Large to OpenAI v3
+    df["model"] = df["model"].apply(lambda x: x.replace("OpenAI v3 Large", "OpenAI v3"))
+    # rename Cohere v3 English to Cohere v3
+    df["model"] = df["model"].apply(lambda x: x.replace("Cohere v3 English", "Cohere v3"))
 
     # Melt the DataFrame for grouped barplot preparation
     df_melted = df.melt(id_vars=["dataset", "model", "category"], 

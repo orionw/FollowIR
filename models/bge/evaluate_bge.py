@@ -34,7 +34,7 @@ if __name__ == '__main__':
                           pooling_method=args.pooling_method)
 
     if args.task_names is None:
-        task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]
     else:
         task_names = args.task_names
 
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
         model.query_instruction_for_retrieval = instruction
 
-        evaluation = MTEB(tasks=[task], task_langs=['en'], eval_splits = ["test" if task not in ['MSMARCO'] else 'dev'])
+        evaluation = MTEB(tasks=[task], task_langs=['en'], eval_splits = ["test" if task not in ['MSMARCO'] else 'dev'], do_length_ablation=True)
         evaluation.run(model,
                        output_folder=args.output_dir,
                        save_corpus_embeddings=True)

@@ -9,7 +9,7 @@ import tqdm
 
 from mteb import MTEB
 # from sentence_transformers import SentenceTransformer
-from mteb.evaluation.evaluators.InstructionRetrievalEvaluator import DRESModel
+from mteb.evaluation.evaluators.RetrievalEvaluator import DRESModel
 
 
 
@@ -93,7 +93,6 @@ class APISentenceTransformer(DRESModel):
             embeddings = []
             print(sentences[0], len(sentences))
             iterations = list(range(0, len(sentences), batch_size))
-            print(iterations)
             for i in tqdm.tqdm(iterations):
                 batch = sentences[i:i+batch_size]
                 cur_embeds = self.embed_api(batch, type="docs")
@@ -116,11 +115,11 @@ if __name__ == "__main__":
     model = APISentenceTransformer(args.model_name_or_path)
 
     if args.task_names is None:
-        task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]
     else:
         task_names = args.task_names
 
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
-        evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)  # Remove "en" for running all languages
         evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True, batch_size=50)

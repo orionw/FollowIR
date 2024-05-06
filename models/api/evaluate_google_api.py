@@ -2,9 +2,10 @@ import pandas as pd
 import numpy as np
 import argparse
 import tqdm
+import time
 
 from mteb import MTEB
-from mteb.evaluation.evaluators.InstructionRetrievalEvaluator import DRESModel
+from mteb.evaluation.evaluators.RetrievalEvaluator import DRESModel
 
 from typing import List
 
@@ -15,7 +16,7 @@ from vertexai.language_models import TextEmbeddingInput, TextEmbeddingModel
 class APISentenceTransformerGoogle(DRESModel):
 
     def __init__(self, model, **kwargs):
-        super().__init__(model, **kwargs)
+        super().__init__(model="text-embedding-preview-0409", **kwargs)
         self.embedder = TextEmbeddingModel.from_pretrained(model)
         self.model_name = model
 
@@ -23,11 +24,9 @@ class APISentenceTransformerGoogle(DRESModel):
         self,
         texts: List[str],
         task_embed: str,
-        model_name: str = "text-embedding-preview-0409",
     ) -> List[List[float]]:
         """Embeds texts with a pre-trained, foundational model."""
         inputs = [TextEmbeddingInput(text, task_embed) for text in texts]
-        input_lens = [len(item.text) for item in inputs]
         embeddings = self.embedder.get_embeddings(inputs)
         return [embedding.values for embedding in embeddings]
 
@@ -60,7 +59,12 @@ class APISentenceTransformerGoogle(DRESModel):
             sentences = [(i + " " + s).strip() for s, i in zip(sentences, instruction_list)]
             print(sentences[0])
             assert len(sentences) == 1
-            embeddings = self.embed_text(sentences, "RETRIEVAL_QUERY")
+            try:
+                embeddings = self.embed_text(sentences, "RETRIEVAL_QUERY")
+            except Exception as e:
+                print(sentences)
+                time.sleep(30)
+                return self.encode(sentences, batch_size=1, **kwargs)
 
         else:
             # is docs
@@ -71,7 +75,12 @@ class APISentenceTransformerGoogle(DRESModel):
             print(iterations)
             for i in tqdm.tqdm(iterations):
                 batch = sentences[i:i+batch_size]
-                cur_embeds = self.embed_text(batch, "RETRIEVAL_DOCUMENT")
+                try:
+                    cur_embeds = self.embed_text(batch, "RETRIEVAL_DOCUMENT")   
+                except Exception as e:
+                    print(batch)
+                    time.sleep(30)
+                    return self.encode(sentences, batch_size=1, **kwargs)
                 embeddings.extend(cur_embeds)
             assert len(embeddings) == len(sentences), f"Expected {len(sentences)} embeddings, got {len(embeddings)}."
             
@@ -90,11 +99,11 @@ if __name__ == "__main__":
     model = APISentenceTransformerGoogle(args.model_name_or_path)
 
     if args.task_names is None:
-        task_names = [t.description["name"] for t in MTEB(task_types=['InstructionRetrieval'], task_langs=['en']).tasks]
+        task_names = [t.metadata_dict["name"] for t in MTEB(task_types=['InstructionRetrieval']).tasks]
     else:
         task_names = args.task_names
 
     for task in task_names:
         eval_splits = ["dev"] if task == "MSMARCO" else ["test"]
-        evaluation = MTEB(tasks=[task], task_langs=["en"])  # Remove "en" for running all languages
+        evaluation = MTEB(tasks=[task], task_langs=["en"], do_length_ablation=True)  # Remove "en" for running all languages
         evaluation.run(model, output_folder=args.output_dir, eval_splits=eval_splits, save_corpus_embeddings=True, batch_size=50)
