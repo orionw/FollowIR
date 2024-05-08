@@ -6,7 +6,7 @@ Retrieval Models to Follow Instructions</b></h1>
         <a href="#links">Model/Data Links</a> |
         <a href="#installation">Installation</a> |
         <a href="#usage">Usage</a> |
-        <a href="https://huggingface.co/spaces/mteb/leaderboard?task=InstructionRetrieval">Leaderboard</a> |
+        <a href="https://huggingface.co/spaces/mteb/leaderboard?task=instructionretrieval">Leaderboard</a> |
         <a href="#citing">Citing</a> |
     <p>
 </h4>
