@@ -55,6 +55,8 @@ def evaluate_any(args):
     elif args.model_name in ["GritLM/GritLM-7B"]:
         cmd = f"python -u models/gritlm/evaluate_gritlm.py --model_name_or_path {args.model_name} --output_dir {args.output_dir}"
 
+    elif "LLM2Vec" in args.model_name:
+        cmd = f"python -u models/llm2vec/evaluate_llm2vec.py --model_name_or_path {args.model_name} --output_dir {args.output_dir}"
 
     else:
         if 'tart-dual-contriever' in args.model_name:

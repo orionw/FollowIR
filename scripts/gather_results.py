@@ -31,6 +31,9 @@ model_order = {
     "INSTRUCTOR-xl": "hkunlp/instructor-xl",
     "GritLM-7B": "GritLM/GritLM-7B",
     "TART-FLAN-T5-xl": "facebook/tart-full-flan-t5-xl",
+    "LLM2Vec-Llama3": "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-supervised",
+    "LLM2Vec-Mistral": "McGill-NLP/LLM2Vec-Mistral-7B-Instruct-v2-mntp-supervised",
+    "LLM2Vec-Sheared-Llama": "McGill-NLP/LLM2Vec-Sheared-LLaMA-mntp-supervised",
     # rerankers
     "FLAN-T5-base": "google/flan-t5-base",
     "Llama-2-7B-chat": "meta-llama/Llama-2-7b-chat-hf",
