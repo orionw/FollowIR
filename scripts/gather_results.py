@@ -31,6 +31,8 @@ model_order = {
     "INSTRUCTOR-xl": "hkunlp/instructor-xl",
     "GritLM-7B": "GritLM/GritLM-7B",
     "TART-FLAN-T5-xl": "facebook/tart-full-flan-t5-xl",
+    "Llama3": "meta-llama/Meta-Llama-3-8B",
+    "FollowIR-Llama3-8B": "__home__hltcoe__oweller__my_exps__LLaMA-Factory__followir-v2-llama3__checkpoint-232",
     "LLM2Vec-Llama3": "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-supervised",
     "LLM2Vec-Mistral": "McGill-NLP/LLM2Vec-Mistral-7B-Instruct-v2-mntp-supervised",
     "LLM2Vec-Sheared-Llama": "McGill-NLP/LLM2Vec-Sheared-LLaMA-mntp-supervised",
@@ -41,6 +43,15 @@ model_order = {
     "GritLM-Reranker": "GritLM",
     "Mistral-7B-instruct": "mistralai/Mistral-7B-Instruct-v0.2",
     "FollowIR-7B": "jhu-clsp/FollowIR-7B",
+
+    # new exps
+    "RepLlama-200": "retriever-llama2",
+    "RepLlama-400": "retriever-llama2-400",
+    "RepLlama-600": "retriever-llama2-600",
+    "RepLlama-instruct-200": "retriever-llama2-instruct",
+    "RepLlama-instruct-400": "retriever-llama2-instruct-400",
+    "RepLlama-instruct-600": "retriever-llama2-instruct-600",
+    "RepLlama": "castorini/repllama-v1-7b-lora-passage"
 
 }
 
@@ -56,8 +67,13 @@ def gather_results(args, dataset_in_table=["Robust04InstructionRetrieval", "News
     for file in tqdm.tqdm(glob.glob(os.path.join(args.results_dir, "*", "*.json"))):
         dataset_name = file.split("/")[-1].replace(".json", "")
         model_name = file.split("/")[-2]
+        # print(file)
         with open(file, "r") as f:
-            data = json.load(f)["test"] # all on test set
+            data = json.load(f)
+            if "test" in data:
+                data = data["test"]
+            else:
+                data = data["scores"]["test"][0]
 
             rankwise = data["p-MRR"]
 
@@ -85,7 +101,9 @@ def gather_results(args, dataset_in_table=["Robust04InstructionRetrieval", "News
                 "map_changed": map1000_changed,
                 "ndcg@5_changed": ndcg5_changed,
                 "main_score": map1000 if "news" not in dataset_name.lower() else ndcg5,
-                "diff_score": diff_map1000 if "news" not in dataset_name.lower() else diff_ndcg5
+                "diff_score": diff_map1000 if "news" not in dataset_name.lower() else diff_ndcg5,
+                "base_map": map1000_base,
+                "base_ndcg@5": ndcg5_base
 
             })
 
@@ -127,6 +145,9 @@ def gather_results(args, dataset_in_table=["Robust04InstructionRetrieval", "News
     # now add an average column at the end for both
     pivoted_and_ordered_df["main_score_avg"] = pivoted_and_ordered_df[['main_score Robust04InstructionRetrieval', 'main_score News21InstructionRetrieval', 'main_score Core17InstructionRetrieval']].astype(float).mean(axis=1).apply(lambda x: str(round(x, 1)))
     pivoted_and_ordered_df["p-MRR_avg"] = pivoted_and_ordered_df[['p-MRR Robust04InstructionRetrieval', 'p-MRR News21InstructionRetrieval', 'p-MRR Core17InstructionRetrieval']].astype(float).mean(axis=1).apply(lambda x: str(round(x, 1)))
+
+    # save to main_results.csv
+    pivoted_and_ordered_df.to_csv(os.path.join(args.results_dir, "main_results.csv"), index=False)
 
     min_values = {}
     max_values = {}

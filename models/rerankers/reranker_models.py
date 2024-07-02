@@ -307,11 +307,19 @@ class FollowIRReranker(LlamaReranker):
     def __init__(self, model_name_or_path: str, **kwargs):
         # use the base class for everything except template
         super().__init__(model_name_or_path, **kwargs)
-        self.template = """<s> [INST] You are an expert Google searcher, whose job is to determine if the following document is relevant to the query (true/false). Answer using only one word, one of those two choices.
+        # if "llama" in model_name_or_path.lower():
+        self.template = """<|begin_of_text|><|start_header_id|>system<|end_header_id|><|eot_id|><|start_header_id|>user<|end_header_id|>
+You are an expert Google searcher, whose job is to determine if the following document is relevant to the query (true/false). Answer using only one word, one of those two choices.
 
 Query: {query}
 Document: {text}
-Relevant (only output one word, either "true" or "false"): [/INST] """
+Relevant (only output one word, either "true" or "false"):<|eot_id|><|start_header_id|>assistant<|end_header_id|>"""
+#         else:
+#             self.template = """<s> [INST] You are an expert Google searcher, whose job is to determine if the following document is relevant to the query (true/false). Answer using only one word, one of those two choices.
+
+# Query: {query}
+# Document: {text}
+# Relevant (only output one word, either "true" or "false"): [/INST] """
         self.max_length = min(2048, self.tokenizer.model_max_length)
         # self.query_instruct_template = "\"{query}\", details: \"{instruction}\""
         print(f"Using query_instruct_template of {self.query_instruct_template}")
@@ -523,4 +531,7 @@ MODEL_DICT = {
     # "castorini/rankllama-v1-7b-lora-passage": RankLlamaReranker, # Not working correctly
     "jhu-clsp/FollowIR-7B": FollowIRReranker,
     "GritLM": GritLMReranker,
+    "/home/hltcoe/oweller/my_exps/LLaMA-Factory/llama3-232/": FollowIRReranker,
+    "/home/hltcoe/oweller/my_exps/LLaMA-Factory/llama3-232": FollowIRReranker,
+    "meta-llama/Meta-Llama-3-8B": FollowIRReranker,
 }

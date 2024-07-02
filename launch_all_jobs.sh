@@ -6,6 +6,8 @@ models=("bm25" "intfloat/e5-base-v2" "intfloat/e5-large-v2" "facebook/contriever
 models=("McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-supervised" "McGill-NLP/LLM2Vec-Mistral-7B-Instruct-v2-mntp-supervised" "McGill-NLP/LLM2Vec-Sheared-LLaMA-mntp-supervised")
 
 # models=("cohere" "openai" "google") API models need special keys
+# "/home/hltcoe/oweller/my_exps/LLaMA-Factory/llama3-232/"
+models=("/home/hltcoe/oweller/my_exps/tevatron/retriever-llama2/checkpoint-200")
 
 mkdir -p results
 mkdir -p logs
